@@ -1,6 +1,7 @@
 package com.phantom.ui.config
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,11 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -32,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.phantom.core.PhantomConfig
@@ -49,23 +53,37 @@ fun PhantomConfigScreen(onBack: () -> Unit) {
             .fillMaxSize()
             .background(colors.background)
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = colors.accent,
+            Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .clickable { onBack() }
+                    .align(Alignment.CenterStart)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(colors.surfaceSecondary)
+                    .clickable { onBack() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = colors.textSecondary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Text(
+                text = "Configuration",
+                color = colors.textPrimary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.align(Alignment.Center)
             )
-            Text(text = "Configuration", color = colors.textPrimary, fontSize = 20.sp)
         }
+
+        HorizontalDivider(color = colors.border, thickness = 0.5.dp)
 
         if (entries.isEmpty()) {
             Box(
@@ -76,7 +94,9 @@ fun PhantomConfigScreen(onBack: () -> Unit) {
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(entries, key = { it.key }) { entry ->
@@ -95,7 +115,8 @@ private fun ConfigEntryRow(entry: PhantomConfigEntry) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 2.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .border(0.5.dp, colors.border, RoundedCornerShape(10.dp))
             .background(colors.surface)
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -105,7 +126,28 @@ private fun ConfigEntryRow(entry: PhantomConfigEntry) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = entry.label, color = colors.textPrimary, fontSize = 14.sp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = entry.label,
+                    color = colors.textPrimary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                if (entry.isModified) {
+                    Text(
+                        text = "Modified",
+                        color = colors.configModified,
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .border(0.5.dp, colors.configModified, RoundedCornerShape(4.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
             if (entry.isModified) {
                 Text(
                     text = "Reset",
@@ -114,10 +156,6 @@ private fun ConfigEntryRow(entry: PhantomConfigEntry) {
                     modifier = Modifier.clickable { PhantomConfig.resetValue(entry.key) }
                 )
             }
-        }
-
-        if (entry.isModified) {
-            Text(text = "Modified", color = colors.configModified, fontSize = 11.sp)
         }
 
         when (entry.type) {
@@ -185,10 +223,11 @@ private fun PickerConfigEditor(entry: PhantomConfigEntry) {
             fontSize = 14.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .border(0.5.dp, colors.border, RoundedCornerShape(8.dp))
                 .background(colors.surfaceSecondary)
                 .clickable { expanded = true }
-                .padding(12.dp)
+                .padding(14.dp)
         )
         DropdownMenu(
             expanded = expanded,

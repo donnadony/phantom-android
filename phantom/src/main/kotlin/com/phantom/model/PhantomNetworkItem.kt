@@ -13,5 +13,22 @@ data class PhantomNetworkItem(
     val statusCode: Int? = null,
     val timestamp: Long = System.currentTimeMillis(),
     val duration: Long? = null,
-    val curlCommand: String? = null
-)
+    val curlCommand: String? = null,
+    val isMocked: Boolean = false
+) {
+    val responseSize: String
+        get() {
+            val bytes = responseBody?.toByteArray()?.size ?: 0
+            return when {
+                bytes < 1024 -> "$bytes B"
+                bytes < 1024 * 1024 -> "${bytes / 1024} KB"
+                else -> "${bytes / (1024 * 1024)} MB"
+            }
+        }
+
+    val isError: Boolean
+        get() = statusCode != null && statusCode >= 400
+
+    val isSlow: Boolean
+        get() = duration != null && duration > 1000
+}

@@ -25,7 +25,7 @@ class PhantomOkHttpInterceptor : Interceptor {
                 .message("Mocked")
                 .body(body.toResponseBody("application/json".toMediaTypeOrNull()))
                 .build()
-            Phantom.logResponse(request, mockResponse)
+            Phantom.logResponse(request, mockResponse, isMocked = true)
             return mockResponse
         }
 

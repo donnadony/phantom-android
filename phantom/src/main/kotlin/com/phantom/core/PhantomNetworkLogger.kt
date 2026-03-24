@@ -47,7 +47,8 @@ object PhantomNetworkLogger {
         method: String,
         headers: Map<String, String>,
         body: String?,
-        statusCode: Int?
+        statusCode: Int?,
+        isMocked: Boolean = false
     ) {
         mutex.withLock {
             val key = compositeKey(url, method)
@@ -58,7 +59,8 @@ object PhantomNetworkLogger {
                 responseHeaders = headers,
                 responseBody = body?.let { PhantomJson.prettyPrint(it) },
                 statusCode = statusCode,
-                duration = duration
+                duration = duration,
+                isMocked = isMocked
             )
 
             _requests.value = _requests.value.map { item ->
@@ -94,7 +96,8 @@ object PhantomNetworkLogger {
         method: String,
         headers: Map<String, String>,
         body: String?,
-        statusCode: Int?
+        statusCode: Int?,
+        isMocked: Boolean = false
     ) {
         val key = compositeKey(url, method)
         val pending = pendingRequests.remove(key)
@@ -104,7 +107,8 @@ object PhantomNetworkLogger {
             responseHeaders = headers,
             responseBody = body?.let { PhantomJson.prettyPrint(it) },
             statusCode = statusCode,
-            duration = duration
+            duration = duration,
+            isMocked = isMocked
         )
 
         _requests.value = _requests.value.map { item ->

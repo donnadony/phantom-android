@@ -51,9 +51,10 @@ object Phantom {
         method: String,
         headers: Map<String, String> = emptyMap(),
         body: String? = null,
-        statusCode: Int? = null
+        statusCode: Int? = null,
+        isMocked: Boolean = false
     ) {
-        PhantomNetworkLogger.logResponseSync(url, method, headers, body, statusCode)
+        PhantomNetworkLogger.logResponseSync(url, method, headers, body, statusCode, isMocked)
     }
 
     fun logRequest(request: Request) {
@@ -68,12 +69,12 @@ object Phantom {
         logRequest(request.url.toString(), request.method, headers, bodyString)
     }
 
-    fun logResponse(request: Request, response: Response) {
+    fun logResponse(request: Request, response: Response, isMocked: Boolean = false) {
         val headers = response.headers.toMap()
         val bodyString = runCatching {
             response.peekBody(1024 * 1024).string()
         }.getOrNull()
-        logResponse(request.url.toString(), request.method, headers, bodyString, response.code)
+        logResponse(request.url.toString(), request.method, headers, bodyString, response.code, isMocked)
     }
 
     fun mockResponse(url: String, method: String): Pair<ByteArray, Int>? {
